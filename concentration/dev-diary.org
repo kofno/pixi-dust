@@ -1,0 +1,7 @@
+* Building Concentration on Pixi.js
+
+** Grabbed some free icons from smashing magazine.
+*** Used shoebox to create a pixi compatible atlas
+**** Had to make sure I changed the file extension to json.
+*** Made sure I could load the assets.
+*** FrameID appears to be wahtever the index is in the json. Shoebox defaults to using the filename.
