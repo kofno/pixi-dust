@@ -1,0 +1,65 @@
+{
+"frames": {
+	"BlankPiece.png": {
+		"frame": {"x":0, "y":520, "w":144, "h":144},
+		"spriteSourceSize": {"x":0,"y":0,"w":144,"h":144},
+		"sourceSize": {"w":144,"h":144}
+	},
+	"InfoButton.png": {
+		"frame": {"x":0, "y":455, "w":522, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":522,"h":64},
+		"sourceSize": {"w":522,"h":64}
+	},
+	"OPiece.png": {
+		"frame": {"x":290, "y":520, "w":144, "h":144},
+		"spriteSourceSize": {"x":0,"y":0,"w":144,"h":144},
+		"sourceSize": {"w":144,"h":144}
+	},
+	"OWins.png": {
+		"frame": {"x":0, "y":325, "w":522, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":522,"h":64},
+		"sourceSize": {"w":522,"h":64}
+	},
+	"OsTurn.png": {
+		"frame": {"x":0, "y":390, "w":522, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":522,"h":64},
+		"sourceSize": {"w":522,"h":64}
+	},
+	"PlayAsO.png": {
+		"frame": {"x":0, "y":130, "w":522, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":522,"h":64},
+		"sourceSize": {"w":522,"h":64}
+	},
+	"PlayAsX.png": {
+		"frame": {"x":0, "y":260, "w":522, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":522,"h":64},
+		"sourceSize": {"w":522,"h":64}
+	},
+	"TitleBar.png": {
+		"frame": {"x":0, "y":195, "w":522, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":522,"h":64},
+		"sourceSize": {"w":522,"h":64}
+	},
+	"XPiece.png": {
+		"frame": {"x":145, "y":520, "w":144, "h":144},
+		"spriteSourceSize": {"x":0,"y":0,"w":144,"h":144},
+		"sourceSize": {"w":144,"h":144}
+	},
+	"XWins.png": {
+		"frame": {"x":0, "y":0, "w":522, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":522,"h":64},
+		"sourceSize": {"w":522,"h":64}
+	},
+	"XsTurn.png": {
+		"frame": {"x":0, "y":65, "w":522, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":522,"h":64},
+		"sourceSize": {"w":522,"h":64}
+	}
+
+},
+"meta": {
+	"image": "sprites.png",
+	"size": {"w": 523, "h": 665},
+	"scale": "1"
+}
+}

@@ -1,127 +1,167 @@
 var Game = (function(PIXI, R) {
 
-  var children = R.memoize(function(turn, move) {
-    return R.foldlIndexed(generateChild(turn), [], move);
-  });
-
-  function nextMove(turn, move) {
-    var index = bestMove(turn, move);
-    return children(turn, move)[index];
+  function Game() {
+    this.loader = new PIXI.AssetLoader(['sprites.json']);
+    this.stage  = new PIXI.Stage(0xffffff);
+    this.renderer = PIXI.autoDetectRenderer(640, 960);
+    this.container = new PIXI.DisplayObjectContainer();
   }
 
-  function bestMove(turn, move) {
-    var ss = scores(turn, move);
-    return eqX(turn) ? R.indexOf(R.max(ss), ss) : R.indexOf(R.min(ss), ss);
+  Game.prototype.run = function() {
+    this.stage.addChild(this.container);
+    document.body.appendChild(this.renderer.view);
+
+    this.loader.on('onComplete', this.onAssetsLoaded.bind(this));
+    this.loader.load();
   }
 
-  var generateChild = R.curry(function generateChild(turn, accum, val, index, move) {
-    if (!val) {
-      var child = move.slice(0);
-      child[index] = turn;
-      accum.push(child);
+  Game.prototype.onAssetsLoaded = function() {
+    this.addTitleBar();
+    this.initializeButtonTextures();
+    this.addGameBoard();
+    this.addStartGameButtons();
+
+    requestAnimFrame(this.animate.bind(this));
+  }
+
+  Game.prototype.animate = function() {
+    this.renderer.render(this.stage);
+
+    requestAnimFrame(this.animate.bind(this));
+  }
+
+  Game.prototype.addTitleBar = function() {
+    var titleBar = PIXI.Sprite.fromImage('TitleBar.png');
+    titleBar.position.x = 59;
+    titleBar.position.y = 30;
+
+    this.container.addChild(titleBar);
+  }
+
+  Game.prototype.initializeButtonTextures = function() {
+    this.buttonTextures = {
+      blank : new PIXI.Texture.fromImage('BlankPiece.png'),
+      X     : new PIXI.Texture.fromImage('XPiece.png'),
+      O     : new PIXI.Texture.fromImage('OPiece.png')
     }
-    return accum;
-  });
-
-  var score = R.curry(function(turn, multiplier, move) {
-    // Make winning on the next move most valuable
-    if (xWins(move)) return [ 1 * multiplier];
-    if (oWins(move)) return [-1 * multiplier];
-    if (tie(move))   return [ 0 * multiplier];
-
-    // Dimish the value of future wins
-    return R.flatten(R.map(score(toggle(turn), 1), children(toggle(turn), move)));
-  });
-
-  function scores(turn, move) {
-    return R.map(sum5, R.map(score(turn, 10), Game.children(turn, move)));
   }
 
-  function xWins(move) {
+  Game.prototype.addStartGameButtons = function() {
+    var playAsO = PIXI.Sprite.fromImage('PlayAsO.png');
+    playAsO.interactive = true;
+    playAsO.buttonMode  = true;
+    playAsO.position.x  = 59;
+    playAsO.position.y  = 695;
+
+    playAsO.mousedown = playAsO.touchstart = function() {
+      this.aiX = true;
+      this.turn = "X";
+      this.container.removeChild(playAsO);
+
+      setTimeout(function() {
+        var moveIdx = Logic.nextMoveIndex(this.turn, this.gameState());
+        this.clickMove(this.buttons[moveIdx]);
+      }.bind(this), 1000);
+    }.bind(this)
+
+    this.container.addChild(playAsO);
+  }
+
+  Game.prototype.addGameBoard = function() {
+    this.buttons = R.map(function(i) {
+      var button = this.addGridButton(i);
+      this.container.addChild(button);
+      return button;
+    }.bind(this), R.range(0, 9));
+  }
+
+  Game.prototype.addGridButton = function(i) {
+    var hIndex = i % 3;
+    var vIndex = Math.floor(i/3);
+    var button = new PIXI.Sprite(this.buttonTextures.blank);
+
+    button.interactive = true;
+    button.buttonMode  = true;
+    button.position.x  = (hIndex * (144 + 45)) + 59;
+    button.position.y  = (vIndex * (144 + 45)) + 140;
+    button.theValue    = null;
+
+    button.mousedown = button.touchstart = this.onMoveClicked.bind(this)
+
+    return button;
+  }
+
+  Game.prototype.onMoveClicked = function(event) {
+    if (this.canMove(event.target)) {
+      this.clickMove(event.target);
+    }
+  }
+
+  Game.prototype.clickMove = function(button) {
+    button.setTexture(this.buttonTextures[this.turn]);
+    button.theValue    = this.turn;
+    button.interactive = false;
+    button.buttonMode  = false;
+
+    if (this.gameIsOver()) {
+      this.endGame()
+    } else {
+      this.turn = toggleTurn(this.turn);
+      if (this.aiTurn()) {
+        setTimeout(function() {
+          var moveIdx = Logic.nextMoveIndex(this.turn, this.gameState());
+          this.clickMove(this.buttons[moveIdx])
+        }.bind(this), 1000)
+      }
+    }
+  }
+
+  Game.prototype.gameIsOver = function() {
+    var state = this.gameState();
+
     return (
-      R.any(allX, rows(move)) ||
-        R.any(allX, columns(move)) ||
-        R.any(allX, diagnals(move))
+      Logic.xWins(state) ||
+        Logic.oWins(state) ||
+        Logic.tie(state)
     );
   }
 
-  function oWins(move) {
+  Game.prototype.endGame = function() {
+    this.turn = null;
+
+    // A winner you
+
+    // Play again?
+  }
+
+  Game.prototype.gameState = function() {
+    return R.pluck('theValue', this.buttons);
+  }
+
+  Game.prototype.canMove = function(button) {
     return (
-      R.any(allO, rows(move)) ||
-        R.any(allO, columns(move)) ||
-        R.any(allO, diagnals(move))
+      this.turn &&
+        !button.theValue &&
+        !this.aiTurn()
     );
   }
 
-  // Assumes 'win' checks have already failed so board must be full.
-  var tie = R.all(notNull);
-
-  var eqX  = R.eq("X");
-  var eqO  = R.eq("O");
-  var allX = R.all(eqX);
-  var allO = R.all(eqO);
-
-  function notNull(value) {
-    return value != null;
+  Game.prototype.aiTurn = function() {
+    return this.turn == "X" && this.aiX;
   }
 
-  function rows(move) {
-    return R.foldlIndexed(function(memo, val, i) {
-      if (i % 3 == 0) {
-        memo.push([val]);
-      } else {
-        memo[memo.length - 1].push(val);
-      }
-      return memo;
-    }, [], move);
+  Game.prototype.aiMove = function() {
+    var moveIdx = Logic.nextMoveIndex(this.turn, this.gameState());
+    this.clickMove(this.buttons[moveIdx]);
   }
 
-  function columns(move) {
-    return R.foldlIndexed(function(memo, val, i) {
-      if (i < 3) {
-        memo.push([val]);
-      } else {
-        memo[i % 3].push(val);
-      }
-      return memo;
-    }, [], move);
+  function toggleTurn(turn) {
+    return turn == "X" ? "O" : "X";
   }
 
-  function diagnals(move) {
-    return [
-      [move[0], move[4], move[8]],
-      [move[2], move[4], move[6]]
-    ];
-  }
-
-  var toggle = R.memoize(function(turn) {
-    return (turn == "X" ? "O" : "X");
-  });
-
-  var sum = R.foldl(R.add, 0);
-  var sum5 = R.compose(sum, R.take(5));
-
-  var initialMove = function() {
-    return [null, null, null,
-            null, null, null,
-            null, null, null];
-  }
-
-  return {
-    initialMove : initialMove,
-    children    : children,
-    score       : score,
-    xWins       : xWins,
-    oWins       : oWins,
-    tie         : tie,
-    rows        : rows,
-    columns     : columns,
-    diagnals    : diagnals,
-    sum         : sum,
-    nextMove    : nextMove,
-    scores      : scores
-  };
+  return Game;
 
 })(PIXI, R);
 
-console.log(Game.scores("X", []))
+var game = new Game();
+game.run();
