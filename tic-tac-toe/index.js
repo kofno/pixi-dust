@@ -1,10 +1,11 @@
 var Game = (function(PIXI, R) {
 
   function Game() {
-    this.loader = new PIXI.AssetLoader(['sprites.json']);
-    this.stage  = new PIXI.Stage(0xffffff);
-    this.renderer = PIXI.autoDetectRenderer(640, 960);
-    this.container = new PIXI.DisplayObjectContainer();
+    this.loader           = new PIXI.AssetLoader(['sprites.json']);
+    this.stage            = new PIXI.Stage(0xffffff);
+    this.renderer         = PIXI.autoDetectRenderer(640, 960);
+    this.container        = new PIXI.DisplayObjectContainer();
+    this.startGameButtons = [];
   }
 
   Game.prototype.run = function() {
@@ -46,17 +47,17 @@ var Game = (function(PIXI, R) {
     }
   }
 
-  Game.prototype.addStartGameButtons = function() {
+  Game.prototype.addPlayAsOButton = function() {
     var playAsO = PIXI.Sprite.fromImage('PlayAsO.png');
     playAsO.interactive = true;
     playAsO.buttonMode  = true;
     playAsO.position.x  = 59;
-    playAsO.position.y  = 695;
+    playAsO.position.y  = 695 + 64 + 45;
 
     playAsO.mousedown = playAsO.touchstart = function() {
       this.aiX = true;
       this.turn = "X";
-      this.container.removeChild(playAsO);
+      this.removeGameStartButtons();
 
       setTimeout(function() {
         var moveIdx = Logic.nextMoveIndex(this.turn, this.gameState());
@@ -65,6 +66,38 @@ var Game = (function(PIXI, R) {
     }.bind(this)
 
     this.container.addChild(playAsO);
+
+    return playAsO;
+  }
+
+  Game.prototype.addPlayAsXButton = function() {
+    var playAsX = PIXI.Sprite.fromImage('PlayAsX.png');
+    playAsX.interactive = true;
+    playAsX.buttonMode  = true;
+    playAsX.position.x  = 59;
+    playAsX.position.y  = 695;
+
+    playAsX.mousedown = playAsX.touchstart = function() {
+      this.aiO  = true;
+      this.turn = "X";
+      this.removeGameStartButtons();
+    }.bind(this)
+
+    this.container.addChild(playAsX);
+
+    return playAsX;
+  }
+
+  Game.prototype.addStartGameButtons = function() {
+    this.startGameButtons.push(this.addPlayAsXButton());
+    this.startGameButtons.push(this.addPlayAsOButton());
+  }
+
+  Game.prototype.removeGameStartButtons = function() {
+    R.forEach(function(button) {
+      this.container.removeChild(button);
+    }.bind(this), this.startGameButtons);
+    this.startGameButtons = [];
   }
 
   Game.prototype.addGameBoard = function() {
@@ -147,7 +180,10 @@ var Game = (function(PIXI, R) {
   }
 
   Game.prototype.aiTurn = function() {
-    return this.turn == "X" && this.aiX;
+    return (
+      (this.turn == "X" && this.aiX) ||
+        (this.turn == "O" && this.aiO)
+    );
   }
 
   Game.prototype.aiMove = function() {
