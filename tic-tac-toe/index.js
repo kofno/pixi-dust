@@ -1,6 +1,7 @@
 var Game = (function(PIXI, R) {
 
-  function Game() {
+  function Game(el) {
+    this.el               = document.getElementById(el);
     this.loader           = new PIXI.AssetLoader(['sprites.json']);
     this.stage            = new PIXI.Stage(0xffffff);
     this.renderer         = PIXI.autoDetectRenderer(640, 960);
@@ -10,7 +11,7 @@ var Game = (function(PIXI, R) {
 
   Game.prototype.run = function() {
     this.stage.addChild(this.container);
-    document.body.appendChild(this.renderer.view);
+    (this.el || document.body).appendChild(this.renderer.view);
 
     this.loader.on('onComplete', this.onAssetsLoaded.bind(this));
     this.loader.load();
@@ -199,5 +200,5 @@ var Game = (function(PIXI, R) {
 
 })(PIXI, R);
 
-var game = new Game();
+var game = new Game("the-game");
 game.run();
