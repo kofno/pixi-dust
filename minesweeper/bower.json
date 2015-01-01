@@ -1,0 +1,23 @@
+{
+  "name": "minesweeper",
+  "main": "index.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/kofno/pixi-dust",
+  "authors": [
+    "Ryan L. Bell <ryan.l.bell@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "purescript-maybe":  "0.2.1",
+    "purescript-arrays": "0.3.0",
+    "purescript-random": "0.1.1",
+    "purescript-math":   "0.1.0"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
