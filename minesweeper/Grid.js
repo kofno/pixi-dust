@@ -61,6 +61,15 @@ PS.Prelude = (function () {
         this["__superclass_Prelude.Eq_0"] = __superclass_Prelude$dotEq_0;
         this.compare = compare;
     };
+    function Bits($dot$amp$dot, $dot$up$dot, $dot$bar$dot, complement, shl, shr, zshr) {
+        this[".&."] = $dot$amp$dot;
+        this[".^."] = $dot$up$dot;
+        this[".|."] = $dot$bar$dot;
+        this.complement = complement;
+        this.shl = shl;
+        this.shr = shr;
+        this.zshr = zshr;
+    };
     function BoolLike($amp$amp, not, $bar$bar) {
         this["&&"] = $amp$amp;
         this.not = not;
@@ -76,9 +85,19 @@ PS.Prelude = (function () {
     function refEq(r1) {  return function(r2) {    return r1 === r2;  };};
     function refIneq(r1) {  return function(r2) {    return r1 !== r2;  };};
     function unsafeCompareImpl(lt) {  return function(eq) {    return function(gt) {      return function(x) {        return function(y) {          return x < y ? lt : x > y ? gt : eq;        };      };    };  };};
+    function numShl(n1) {  return function(n2) {    return n1 << n2;  };};
+    function numShr(n1) {  return function(n2) {    return n1 >> n2;  };};
+    function numZshr(n1) {  return function(n2) {    return n1 >>> n2;  };};
+    function numAnd(n1) {  return function(n2) {    return n1 & n2;  };};
+    function numOr(n1) {  return function(n2) {    return n1 | n2;  };};
+    function numXor(n1) {  return function(n2) {    return n1 ^ n2;  };};
+    function numComplement(n) {  return ~n;};
     function boolAnd(b1) {  return function(b2) {    return b1 && b2;  };};
     function boolOr(b1) {  return function(b2) {    return b1 || b2;  };};
     function boolNot(b) {  return !b;};
+    var $bar$bar = function (dict) {
+        return dict["||"];
+    };
     var $greater$greater$eq = function (dict) {
         return dict[">>="];
     };
@@ -95,6 +114,9 @@ PS.Prelude = (function () {
         return dict["<*>"];
     };
     var $colon = cons;
+    var $div$eq = function (dict) {
+        return dict["/="];
+    };
     var $minus = function (dict) {
         return dict["-"];
     };
@@ -153,10 +175,13 @@ PS.Prelude = (function () {
     var ordNumber = new Ord(function () {
         return eqNumber;
     }, unsafeCompare);
-    var $$const = function (_14) {
-        return function (_15) {
-            return _14;
+    var $$const = function (_15) {
+        return function (_16) {
+            return _15;
         };
+    };
+    var complement = function (dict) {
+        return dict.complement;
     };
     var compare = function (dict) {
         return dict.compare;
@@ -164,8 +189,8 @@ PS.Prelude = (function () {
     var $less = function (__dict_Ord_11) {
         return function (a1) {
             return function (a2) {
-                var _347 = compare(__dict_Ord_11)(a1)(a2);
-                if (_347 instanceof LT) {
+                var _353 = compare(__dict_Ord_11)(a1)(a2);
+                if (_353 instanceof LT) {
                     return true;
                 };
                 return false;
@@ -175,8 +200,19 @@ PS.Prelude = (function () {
     var $less$eq = function (__dict_Ord_12) {
         return function (a1) {
             return function (a2) {
-                var _348 = compare(__dict_Ord_12)(a1)(a2);
-                if (_348 instanceof GT) {
+                var _354 = compare(__dict_Ord_12)(a1)(a2);
+                if (_354 instanceof GT) {
+                    return false;
+                };
+                return true;
+            };
+        };
+    };
+    var $greater$eq = function (__dict_Ord_14) {
+        return function (a1) {
+            return function (a2) {
+                var _355 = compare(__dict_Ord_14)(a1)(a2);
+                if (_355 instanceof LT) {
                     return false;
                 };
                 return true;
@@ -189,6 +225,7 @@ PS.Prelude = (function () {
         return x;
     });
     var boolLikeBoolean = new BoolLike(boolAnd, boolNot, boolOr);
+    var bitsNumber = new Bits(numAnd, numXor, numOr, numComplement, numShl, numShr, numZshr);
     var ap = function (__dict_Monad_15) {
         return function (f) {
             return function (a) {
@@ -206,6 +243,7 @@ PS.Prelude = (function () {
         "*": $times, 
         "+": $plus, 
         "-": $minus, 
+        "/=": $div$eq, 
         ":": $colon, 
         "<": $less, 
         "<*>": $less$times$greater, 
@@ -213,10 +251,12 @@ PS.Prelude = (function () {
         "<=": $less$eq, 
         "<>": $less$greater, 
         "==": $eq$eq, 
+        ">=": $greater$eq, 
         ">>=": $greater$greater$eq, 
         Applicative: Applicative, 
         Apply: Apply, 
         Bind: Bind, 
+        Bits: Bits, 
         BoolLike: BoolLike, 
         Category: Category, 
         EQ: EQ, 
@@ -230,9 +270,11 @@ PS.Prelude = (function () {
         Semigroupoid: Semigroupoid, 
         Unit: Unit, 
         ap: ap, 
+        bitsNumber: bitsNumber, 
         boolLikeBoolean: boolLikeBoolean, 
         categoryArr: categoryArr, 
         compare: compare, 
+        complement: complement, 
         cons: cons, 
         "const": $$const, 
         eqNumber: eqNumber, 
@@ -248,7 +290,17 @@ PS.Prelude = (function () {
         refIneq: refIneq, 
         "return": $$return, 
         semigroupoidArr: semigroupoidArr, 
-        unit: unit
+        unit: unit, 
+        "||": $bar$bar
+    };
+})();
+var PS = PS || {};
+PS.Prelude_Unsafe = (function () {
+    "use strict";
+    var Prelude = PS.Prelude;
+    function unsafeIndex(xs) {  return function(n) {    return xs[n];  };};
+    return {
+        unsafeIndex: unsafeIndex
     };
 })();
 var PS = PS || {};
@@ -314,14 +366,14 @@ PS.Data_Maybe = (function () {
     Just.create = function (value0) {
         return new Just(value0);
     };
-    var maybe = function (_70) {
-        return function (_71) {
-            return function (_72) {
-                if (_72 instanceof Nothing) {
-                    return _70;
+    var maybe = function (_71) {
+        return function (_72) {
+            return function (_73) {
+                if (_73 instanceof Nothing) {
+                    return _71;
                 };
-                if (_72 instanceof Just) {
-                    return _71(_72.value0);
+                if (_73 instanceof Just) {
+                    return _72(_73.value0);
                 };
                 throw new Error("Failed pattern match");
             };
@@ -340,6 +392,7 @@ PS.Data_Array = (function () {
     "use strict";
     var Prelude = PS.Prelude;
     var Data_Maybe = PS.Data_Maybe;
+    var Prelude_Unsafe = PS.Prelude_Unsafe;
     function snoc(l) {  return function (e) {    var l1 = l.slice();    l1.push(e);     return l1;  };};
     function length (xs) {  return xs.length;};
     function concat (xss) {  var result = [];  for (var i = 0, l = xss.length; i < l; i++) {    result.push.apply(result, xss[i]);  }  return result;};
@@ -349,19 +402,27 @@ PS.Data_Array = (function () {
     function filter (f) {  return function (arr) {    var n = 0;    var result = [];    for (var i = 0, l = arr.length; i < l; i++) {      if (f(arr[i])) {        result[n++] = arr[i];      }    }    return result;  };};
     function range (start) {  return function (end) {    var i = ~~start, e = ~~end;    var step = i > e ? -1 : 1;    var result = [i], n = 1;    while (i !== e) {      i += step;      result[n++] = i;    }    return result;  };};
     var $dot$dot = range;
+    var $bang$bang = function (xs) {
+        return function (n) {
+            var isInt = function (n_1) {
+                return n_1 !== ~~n_1;
+            };
+            return n < 0 || (n >= length(xs) || isInt(n)) ? Data_Maybe.Nothing.value : new Data_Maybe.Just(xs[n]);
+        };
+    };
     var singleton = function (a) {
         return [ a ];
     };
-    var nubBy = function (_101) {
-        return function (_102) {
-            if (_102.length === 0) {
+    var nubBy = function (_102) {
+        return function (_103) {
+            if (_103.length === 0) {
                 return [  ];
             };
-            if (_102.length >= 1) {
-                var _358 = _102.slice(1);
-                return Prelude[":"](_102[0])(nubBy(_101)(filter(function (y) {
-                    return !_101(_102[0])(y);
-                })(_358)));
+            if (_103.length >= 1) {
+                var _365 = _103.slice(1);
+                return Prelude[":"](_103[0])(nubBy(_102)(filter(function (y) {
+                    return !_102(_103[0])(y);
+                })(_365)));
             };
             throw new Error("Failed pattern match");
         };
@@ -385,6 +446,7 @@ PS.Data_Array = (function () {
         return applyArray;
     }, singleton);
     return {
+        "!!": $bang$bang, 
         "..": $dot$dot, 
         applicativeArray: applicativeArray, 
         applyArray: applyArray, 
@@ -644,67 +706,67 @@ PS.Data_Map = (function () {
         };
     };
     var lookup = function (__copy___dict_Ord_147) {
-        return function (__copy__271) {
-            return function (__copy__272) {
+        return function (__copy__272) {
+            return function (__copy__273) {
                 var __dict_Ord_147 = __copy___dict_Ord_147;
-                var _271 = __copy__271;
                 var _272 = __copy__272;
+                var _273 = __copy__273;
                 tco: while (true) {
-                    if (_272 instanceof Leaf) {
+                    if (_273 instanceof Leaf) {
                         return Data_Maybe.Nothing.value;
                     };
-                    if (_272 instanceof Two && Prelude["=="](__dict_Ord_147["__superclass_Prelude.Eq_0"]())(_271)(_272.value1)) {
-                        return new Data_Maybe.Just(_272.value2);
+                    if (_273 instanceof Two && Prelude["=="](__dict_Ord_147["__superclass_Prelude.Eq_0"]())(_272)(_273.value1)) {
+                        return new Data_Maybe.Just(_273.value2);
                     };
-                    if (_272 instanceof Two && Prelude["<"](__dict_Ord_147)(_271)(_272.value1)) {
+                    if (_273 instanceof Two && Prelude["<"](__dict_Ord_147)(_272)(_273.value1)) {
                         var __tco___dict_Ord_147 = __dict_Ord_147;
-                        var __tco__271 = _271;
-                        var __tco__272 = _272.value0;
+                        var __tco__272 = _272;
+                        var __tco__273 = _273.value0;
                         __dict_Ord_147 = __tco___dict_Ord_147;
-                        _271 = __tco__271;
                         _272 = __tco__272;
+                        _273 = __tco__273;
                         continue tco;
                     };
-                    if (_272 instanceof Two) {
+                    if (_273 instanceof Two) {
                         var __tco___dict_Ord_147 = __dict_Ord_147;
-                        var __tco__271 = _271;
-                        var __tco__272 = _272.value3;
+                        var __tco__272 = _272;
+                        var __tco__273 = _273.value3;
                         __dict_Ord_147 = __tco___dict_Ord_147;
-                        _271 = __tco__271;
                         _272 = __tco__272;
+                        _273 = __tco__273;
                         continue tco;
                     };
-                    if (_272 instanceof Three && Prelude["=="](__dict_Ord_147["__superclass_Prelude.Eq_0"]())(_271)(_272.value1)) {
-                        return new Data_Maybe.Just(_272.value2);
+                    if (_273 instanceof Three && Prelude["=="](__dict_Ord_147["__superclass_Prelude.Eq_0"]())(_272)(_273.value1)) {
+                        return new Data_Maybe.Just(_273.value2);
                     };
-                    if (_272 instanceof Three && Prelude["=="](__dict_Ord_147["__superclass_Prelude.Eq_0"]())(_271)(_272.value4)) {
-                        return new Data_Maybe.Just(_272.value5);
+                    if (_273 instanceof Three && Prelude["=="](__dict_Ord_147["__superclass_Prelude.Eq_0"]())(_272)(_273.value4)) {
+                        return new Data_Maybe.Just(_273.value5);
                     };
-                    if (_272 instanceof Three && Prelude["<"](__dict_Ord_147)(_271)(_272.value1)) {
+                    if (_273 instanceof Three && Prelude["<"](__dict_Ord_147)(_272)(_273.value1)) {
                         var __tco___dict_Ord_147 = __dict_Ord_147;
-                        var __tco__271 = _271;
-                        var __tco__272 = _272.value0;
+                        var __tco__272 = _272;
+                        var __tco__273 = _273.value0;
                         __dict_Ord_147 = __tco___dict_Ord_147;
-                        _271 = __tco__271;
                         _272 = __tco__272;
+                        _273 = __tco__273;
                         continue tco;
                     };
-                    if (_272 instanceof Three && (Prelude["<"](__dict_Ord_147)(_272.value1)(_271) && Prelude["<="](__dict_Ord_147)(_271)(_272.value4))) {
+                    if (_273 instanceof Three && (Prelude["<"](__dict_Ord_147)(_273.value1)(_272) && Prelude["<="](__dict_Ord_147)(_272)(_273.value4))) {
                         var __tco___dict_Ord_147 = __dict_Ord_147;
-                        var __tco__271 = _271;
-                        var __tco__272 = _272.value3;
+                        var __tco__272 = _272;
+                        var __tco__273 = _273.value3;
                         __dict_Ord_147 = __tco___dict_Ord_147;
-                        _271 = __tco__271;
                         _272 = __tco__272;
+                        _273 = __tco__273;
                         continue tco;
                     };
-                    if (_272 instanceof Three) {
+                    if (_273 instanceof Three) {
                         var __tco___dict_Ord_147 = __dict_Ord_147;
-                        var __tco__271 = _271;
-                        var __tco__272 = _272.value6;
+                        var __tco__272 = _272;
+                        var __tco__273 = _273.value6;
                         __dict_Ord_147 = __tco___dict_Ord_147;
-                        _271 = __tco__271;
                         _272 = __tco__272;
+                        _273 = __tco__273;
                         continue tco;
                     };
                     throw new Error("Failed pattern match");
@@ -720,67 +782,67 @@ PS.Data_Map = (function () {
         };
     };
     var fromZipper = function (__copy___dict_Ord_149) {
-        return function (__copy__273) {
-            return function (__copy__274) {
+        return function (__copy__274) {
+            return function (__copy__275) {
                 var __dict_Ord_149 = __copy___dict_Ord_149;
-                var _273 = __copy__273;
                 var _274 = __copy__274;
+                var _275 = __copy__275;
                 tco: while (true) {
-                    if (_273.length === 0) {
-                        return _274;
+                    if (_274.length === 0) {
+                        return _275;
                     };
-                    if (_273.length >= 1) {
-                        var _414 = _273.slice(1);
-                        if (_273[0] instanceof TwoLeft) {
+                    if (_274.length >= 1) {
+                        var _421 = _274.slice(1);
+                        if (_274[0] instanceof TwoLeft) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
-                            var __tco__274 = new Two(_274, (_273[0]).value0, (_273[0]).value1, (_273[0]).value2);
+                            var __tco__275 = new Two(_275, (_274[0]).value0, (_274[0]).value1, (_274[0]).value2);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _273 = _414;
-                            _274 = __tco__274;
+                            _274 = _421;
+                            _275 = __tco__275;
                             continue tco;
                         };
                     };
-                    if (_273.length >= 1) {
-                        var _419 = _273.slice(1);
-                        if (_273[0] instanceof TwoRight) {
+                    if (_274.length >= 1) {
+                        var _426 = _274.slice(1);
+                        if (_274[0] instanceof TwoRight) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
-                            var __tco__274 = new Two((_273[0]).value0, (_273[0]).value1, (_273[0]).value2, _274);
+                            var __tco__275 = new Two((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, _275);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _273 = _419;
-                            _274 = __tco__274;
+                            _274 = _426;
+                            _275 = __tco__275;
                             continue tco;
                         };
                     };
-                    if (_273.length >= 1) {
-                        var _427 = _273.slice(1);
-                        if (_273[0] instanceof ThreeLeft) {
+                    if (_274.length >= 1) {
+                        var _434 = _274.slice(1);
+                        if (_274[0] instanceof ThreeLeft) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
-                            var __tco__274 = new Three(_274, (_273[0]).value0, (_273[0]).value1, (_273[0]).value2, (_273[0]).value3, (_273[0]).value4, (_273[0]).value5);
+                            var __tco__275 = new Three(_275, (_274[0]).value0, (_274[0]).value1, (_274[0]).value2, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _273 = _427;
-                            _274 = __tco__274;
+                            _274 = _434;
+                            _275 = __tco__275;
                             continue tco;
                         };
                     };
-                    if (_273.length >= 1) {
-                        var _435 = _273.slice(1);
-                        if (_273[0] instanceof ThreeMiddle) {
+                    if (_274.length >= 1) {
+                        var _442 = _274.slice(1);
+                        if (_274[0] instanceof ThreeMiddle) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
-                            var __tco__274 = new Three((_273[0]).value0, (_273[0]).value1, (_273[0]).value2, _274, (_273[0]).value3, (_273[0]).value4, (_273[0]).value5);
+                            var __tco__275 = new Three((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, _275, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _273 = _435;
-                            _274 = __tco__274;
+                            _274 = _442;
+                            _275 = __tco__275;
                             continue tco;
                         };
                     };
-                    if (_273.length >= 1) {
-                        var _443 = _273.slice(1);
-                        if (_273[0] instanceof ThreeRight) {
+                    if (_274.length >= 1) {
+                        var _450 = _274.slice(1);
+                        if (_274[0] instanceof ThreeRight) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
-                            var __tco__274 = new Three((_273[0]).value0, (_273[0]).value1, (_273[0]).value2, (_273[0]).value3, (_273[0]).value4, (_273[0]).value5, _274);
+                            var __tco__275 = new Three((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5, _275);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _273 = _443;
-                            _274 = __tco__274;
+                            _274 = _450;
+                            _275 = __tco__275;
                             continue tco;
                         };
                     };
@@ -791,57 +853,57 @@ PS.Data_Map = (function () {
     };
     var insert = function (__dict_Ord_150) {
         var up = function (__copy___dict_Ord_151) {
-            return function (__copy__285) {
-                return function (__copy__286) {
+            return function (__copy__286) {
+                return function (__copy__287) {
                     var __dict_Ord_151 = __copy___dict_Ord_151;
-                    var _285 = __copy__285;
                     var _286 = __copy__286;
+                    var _287 = __copy__287;
                     tco: while (true) {
-                        if (_285.length === 0) {
-                            return new Two(_286.value0, _286.value1, _286.value2, _286.value3);
+                        if (_286.length === 0) {
+                            return new Two(_287.value0, _287.value1, _287.value2, _287.value3);
                         };
-                        if (_285.length >= 1) {
-                            var _458 = _285.slice(1);
-                            if (_285[0] instanceof TwoLeft) {
-                                return fromZipper(__dict_Ord_151)(_458)(new Three(_286.value0, _286.value1, _286.value2, _286.value3, (_285[0]).value0, (_285[0]).value1, (_285[0]).value2));
+                        if (_286.length >= 1) {
+                            var _465 = _286.slice(1);
+                            if (_286[0] instanceof TwoLeft) {
+                                return fromZipper(__dict_Ord_151)(_465)(new Three(_287.value0, _287.value1, _287.value2, _287.value3, (_286[0]).value0, (_286[0]).value1, (_286[0]).value2));
                             };
                         };
-                        if (_285.length >= 1) {
-                            var _467 = _285.slice(1);
-                            if (_285[0] instanceof TwoRight) {
-                                return fromZipper(__dict_Ord_151)(_467)(new Three((_285[0]).value0, (_285[0]).value1, (_285[0]).value2, _286.value0, _286.value1, _286.value2, _286.value3));
+                        if (_286.length >= 1) {
+                            var _474 = _286.slice(1);
+                            if (_286[0] instanceof TwoRight) {
+                                return fromZipper(__dict_Ord_151)(_474)(new Three((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, _287.value0, _287.value1, _287.value2, _287.value3));
                             };
                         };
-                        if (_285.length >= 1) {
-                            var _479 = _285.slice(1);
-                            if (_285[0] instanceof ThreeLeft) {
+                        if (_286.length >= 1) {
+                            var _486 = _286.slice(1);
+                            if (_286[0] instanceof ThreeLeft) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
-                                var __tco__286 = new KickUp(new Two(_286.value0, _286.value1, _286.value2, _286.value3), (_285[0]).value0, (_285[0]).value1, new Two((_285[0]).value2, (_285[0]).value3, (_285[0]).value4, (_285[0]).value5));
+                                var __tco__287 = new KickUp(new Two(_287.value0, _287.value1, _287.value2, _287.value3), (_286[0]).value0, (_286[0]).value1, new Two((_286[0]).value2, (_286[0]).value3, (_286[0]).value4, (_286[0]).value5));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _285 = _479;
-                                _286 = __tco__286;
+                                _286 = _486;
+                                _287 = __tco__287;
                                 continue tco;
                             };
                         };
-                        if (_285.length >= 1) {
-                            var _491 = _285.slice(1);
-                            if (_285[0] instanceof ThreeMiddle) {
+                        if (_286.length >= 1) {
+                            var _498 = _286.slice(1);
+                            if (_286[0] instanceof ThreeMiddle) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
-                                var __tco__286 = new KickUp(new Two((_285[0]).value0, (_285[0]).value1, (_285[0]).value2, _286.value0), _286.value1, _286.value2, new Two(_286.value3, (_285[0]).value3, (_285[0]).value4, (_285[0]).value5));
+                                var __tco__287 = new KickUp(new Two((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, _287.value0), _287.value1, _287.value2, new Two(_287.value3, (_286[0]).value3, (_286[0]).value4, (_286[0]).value5));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _285 = _491;
-                                _286 = __tco__286;
+                                _286 = _498;
+                                _287 = __tco__287;
                                 continue tco;
                             };
                         };
-                        if (_285.length >= 1) {
-                            var _503 = _285.slice(1);
-                            if (_285[0] instanceof ThreeRight) {
+                        if (_286.length >= 1) {
+                            var _510 = _286.slice(1);
+                            if (_286[0] instanceof ThreeRight) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
-                                var __tco__286 = new KickUp(new Two((_285[0]).value0, (_285[0]).value1, (_285[0]).value2, (_285[0]).value3), (_285[0]).value4, (_285[0]).value5, new Two(_286.value0, _286.value1, _286.value2, _286.value3));
+                                var __tco__287 = new KickUp(new Two((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, (_286[0]).value3), (_286[0]).value4, (_286[0]).value5, new Two(_287.value0, _287.value1, _287.value2, _287.value3));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _285 = _503;
-                                _286 = __tco__286;
+                                _286 = _510;
+                                _287 = __tco__287;
                                 continue tco;
                             };
                         };
@@ -851,91 +913,91 @@ PS.Data_Map = (function () {
             };
         };
         var down = function (__copy___dict_Ord_152) {
-            return function (__copy__281) {
-                return function (__copy__282) {
-                    return function (__copy__283) {
-                        return function (__copy__284) {
+            return function (__copy__282) {
+                return function (__copy__283) {
+                    return function (__copy__284) {
+                        return function (__copy__285) {
                             var __dict_Ord_152 = __copy___dict_Ord_152;
-                            var _281 = __copy__281;
                             var _282 = __copy__282;
                             var _283 = __copy__283;
                             var _284 = __copy__284;
+                            var _285 = __copy__285;
                             tco: while (true) {
-                                if (_284 instanceof Leaf) {
-                                    return up(__dict_Ord_152)(_281)(new KickUp(Leaf.value, _282, _283, Leaf.value));
+                                if (_285 instanceof Leaf) {
+                                    return up(__dict_Ord_152)(_282)(new KickUp(Leaf.value, _283, _284, Leaf.value));
                                 };
-                                if (_284 instanceof Two && Prelude["=="](__dict_Ord_152["__superclass_Prelude.Eq_0"]())(_282)(_284.value1)) {
-                                    return fromZipper(__dict_Ord_152)(_281)(new Two(_284.value0, _282, _283, _284.value3));
+                                if (_285 instanceof Two && Prelude["=="](__dict_Ord_152["__superclass_Prelude.Eq_0"]())(_283)(_285.value1)) {
+                                    return fromZipper(__dict_Ord_152)(_282)(new Two(_285.value0, _283, _284, _285.value3));
                                 };
-                                if (_284 instanceof Two && Prelude["<"](__dict_Ord_152)(_282)(_284.value1)) {
+                                if (_285 instanceof Two && Prelude["<"](__dict_Ord_152)(_283)(_285.value1)) {
                                     var __tco___dict_Ord_152 = __dict_Ord_152;
-                                    var __tco__281 = Prelude[":"](new TwoLeft(_284.value1, _284.value2, _284.value3))(_281);
-                                    var __tco__282 = _282;
+                                    var __tco__282 = Prelude[":"](new TwoLeft(_285.value1, _285.value2, _285.value3))(_282);
                                     var __tco__283 = _283;
-                                    var __tco__284 = _284.value0;
+                                    var __tco__284 = _284;
+                                    var __tco__285 = _285.value0;
                                     __dict_Ord_152 = __tco___dict_Ord_152;
-                                    _281 = __tco__281;
                                     _282 = __tco__282;
                                     _283 = __tco__283;
                                     _284 = __tco__284;
+                                    _285 = __tco__285;
                                     continue tco;
                                 };
-                                if (_284 instanceof Two) {
+                                if (_285 instanceof Two) {
                                     var __tco___dict_Ord_152 = __dict_Ord_152;
-                                    var __tco__281 = Prelude[":"](new TwoRight(_284.value0, _284.value1, _284.value2))(_281);
-                                    var __tco__282 = _282;
+                                    var __tco__282 = Prelude[":"](new TwoRight(_285.value0, _285.value1, _285.value2))(_282);
                                     var __tco__283 = _283;
-                                    var __tco__284 = _284.value3;
+                                    var __tco__284 = _284;
+                                    var __tco__285 = _285.value3;
                                     __dict_Ord_152 = __tco___dict_Ord_152;
-                                    _281 = __tco__281;
                                     _282 = __tco__282;
                                     _283 = __tco__283;
                                     _284 = __tco__284;
+                                    _285 = __tco__285;
                                     continue tco;
                                 };
-                                if (_284 instanceof Three && Prelude["=="](__dict_Ord_152["__superclass_Prelude.Eq_0"]())(_282)(_284.value1)) {
-                                    return fromZipper(__dict_Ord_152)(_281)(new Three(_284.value0, _282, _283, _284.value3, _284.value4, _284.value5, _284.value6));
+                                if (_285 instanceof Three && Prelude["=="](__dict_Ord_152["__superclass_Prelude.Eq_0"]())(_283)(_285.value1)) {
+                                    return fromZipper(__dict_Ord_152)(_282)(new Three(_285.value0, _283, _284, _285.value3, _285.value4, _285.value5, _285.value6));
                                 };
-                                if (_284 instanceof Three && Prelude["=="](__dict_Ord_152["__superclass_Prelude.Eq_0"]())(_282)(_284.value4)) {
-                                    return fromZipper(__dict_Ord_152)(_281)(new Three(_284.value0, _284.value1, _284.value2, _284.value3, _282, _283, _284.value6));
+                                if (_285 instanceof Three && Prelude["=="](__dict_Ord_152["__superclass_Prelude.Eq_0"]())(_283)(_285.value4)) {
+                                    return fromZipper(__dict_Ord_152)(_282)(new Three(_285.value0, _285.value1, _285.value2, _285.value3, _283, _284, _285.value6));
                                 };
-                                if (_284 instanceof Three && Prelude["<"](__dict_Ord_152)(_282)(_284.value1)) {
+                                if (_285 instanceof Three && Prelude["<"](__dict_Ord_152)(_283)(_285.value1)) {
                                     var __tco___dict_Ord_152 = __dict_Ord_152;
-                                    var __tco__281 = Prelude[":"](new ThreeLeft(_284.value1, _284.value2, _284.value3, _284.value4, _284.value5, _284.value6))(_281);
-                                    var __tco__282 = _282;
+                                    var __tco__282 = Prelude[":"](new ThreeLeft(_285.value1, _285.value2, _285.value3, _285.value4, _285.value5, _285.value6))(_282);
                                     var __tco__283 = _283;
-                                    var __tco__284 = _284.value0;
+                                    var __tco__284 = _284;
+                                    var __tco__285 = _285.value0;
                                     __dict_Ord_152 = __tco___dict_Ord_152;
-                                    _281 = __tco__281;
                                     _282 = __tco__282;
                                     _283 = __tco__283;
                                     _284 = __tco__284;
+                                    _285 = __tco__285;
                                     continue tco;
                                 };
-                                if (_284 instanceof Three && (Prelude["<"](__dict_Ord_152)(_284.value1)(_282) && Prelude["<="](__dict_Ord_152)(_282)(_284.value4))) {
+                                if (_285 instanceof Three && (Prelude["<"](__dict_Ord_152)(_285.value1)(_283) && Prelude["<="](__dict_Ord_152)(_283)(_285.value4))) {
                                     var __tco___dict_Ord_152 = __dict_Ord_152;
-                                    var __tco__281 = Prelude[":"](new ThreeMiddle(_284.value0, _284.value1, _284.value2, _284.value4, _284.value5, _284.value6))(_281);
-                                    var __tco__282 = _282;
+                                    var __tco__282 = Prelude[":"](new ThreeMiddle(_285.value0, _285.value1, _285.value2, _285.value4, _285.value5, _285.value6))(_282);
                                     var __tco__283 = _283;
-                                    var __tco__284 = _284.value3;
+                                    var __tco__284 = _284;
+                                    var __tco__285 = _285.value3;
                                     __dict_Ord_152 = __tco___dict_Ord_152;
-                                    _281 = __tco__281;
                                     _282 = __tco__282;
                                     _283 = __tco__283;
                                     _284 = __tco__284;
+                                    _285 = __tco__285;
                                     continue tco;
                                 };
-                                if (_284 instanceof Three) {
+                                if (_285 instanceof Three) {
                                     var __tco___dict_Ord_152 = __dict_Ord_152;
-                                    var __tco__281 = Prelude[":"](new ThreeRight(_284.value0, _284.value1, _284.value2, _284.value3, _284.value4, _284.value5))(_281);
-                                    var __tco__282 = _282;
+                                    var __tco__282 = Prelude[":"](new ThreeRight(_285.value0, _285.value1, _285.value2, _285.value3, _285.value4, _285.value5))(_282);
                                     var __tco__283 = _283;
-                                    var __tco__284 = _284.value6;
+                                    var __tco__284 = _284;
+                                    var __tco__285 = _285.value6;
                                     __dict_Ord_152 = __tco___dict_Ord_152;
-                                    _281 = __tco__281;
                                     _282 = __tco__282;
                                     _283 = __tco__283;
                                     _284 = __tco__284;
+                                    _285 = __tco__285;
                                     continue tco;
                                 };
                                 throw new Error("Failed pattern match");
@@ -970,16 +1032,16 @@ PS.Data_Set = (function () {
         return new Set(value0);
     };
     var member = function (__dict_Ord_174) {
-        return function (_299) {
-            return function (_300) {
-                return Data_Map.member(__dict_Ord_174)(_299)(_300.value0);
+        return function (_300) {
+            return function (_301) {
+                return Data_Map.member(__dict_Ord_174)(_300)(_301.value0);
             };
         };
     };
     var insert = function (__dict_Ord_175) {
-        return function (_301) {
-            return function (_302) {
-                return new Set(Data_Map.insert(__dict_Ord_175)(_301)(Prelude.unit)(_302.value0));
+        return function (_302) {
+            return function (_303) {
+                return new Set(Data_Map.insert(__dict_Ord_175)(_302)(Prelude.unit)(_303.value0));
             };
         };
     };
@@ -1049,20 +1111,20 @@ PS.Grid = (function () {
     Grid.create = function (value0) {
         return new Grid(value0);
     };
-    var updateValue = function (_314) {
-        return function (_315) {
+    var updateValue = function (_315) {
+        return function (_316) {
             return new Cell({
-                coords: _314.value0.coords, 
-                value: _315
+                coords: _315.value0.coords, 
+                value: _316
             });
         };
     };
     var sub1 = Prelude.flip(Prelude["-"](Prelude.numNumber))(1);
-    var surroundingCoords = function (_328) {
+    var surroundingCoords = function (_329) {
         var coordinateDeltas = [ [ sub1, Prelude.id(Prelude.categoryArr) ], [ Prelude["+"](Prelude.numNumber)(1), Prelude.id(Prelude.categoryArr) ], [ Prelude.id(Prelude.categoryArr), sub1 ], [ Prelude.id(Prelude.categoryArr), Prelude["+"](Prelude.numNumber)(1) ], [ sub1, sub1 ], [ Prelude["+"](Prelude.numNumber)(1), Prelude["+"](Prelude.numNumber)(1) ], [ sub1, Prelude["+"](Prelude.numNumber)(1) ], [ Prelude["+"](Prelude.numNumber)(1), sub1 ] ];
-        var applyDeltas = function (_344) {
-            if (_344.length === 2) {
-                return new Coords(_344[0](_328.value0), _344[1](_328.value1));
+        var applyDeltas = function (_347) {
+            if (_347.length === 2) {
+                return new Coords(_347[0](_329.value0), _347[1](_329.value1));
             };
             throw new Error("Failed pattern match");
         };
@@ -1070,82 +1132,82 @@ PS.Grid = (function () {
     };
     var randomInt = function (max) {
         return function __do() {
-            var _13 = Control_Monad_Eff_Random.random();
-            return 1 + Math.floor(_13 * max);
+            var _14 = Control_Monad_Eff_Random.random();
+            return 1 + Math.floor(_14 * max);
         };
     };
-    var mined = function (_325) {
-        if (_325.value0.value instanceof Data_Maybe.Just && _325.value0.value.value0 instanceof Mine) {
+    var mined = function (_326) {
+        if (_326.value0.value instanceof Data_Maybe.Just && _326.value0.value.value0 instanceof Mine) {
             return true;
         };
         return false;
     };
-    var minedCells = function (_321) {
-        return Data_Array.filter(mined)(_321.value0.cells);
+    var minedCells = function (_322) {
+        return Data_Array.filter(mined)(_322.value0.cells);
     };
     var unmined = Prelude["<<<"](Prelude.semigroupoidArr)(Prelude.not(Prelude.boolLikeBoolean))(mined);
-    var unminedCells = function (_322) {
-        return Data_Array.filter(unmined)(_322.value0.cells);
+    var unminedCells = function (_323) {
+        return Data_Array.filter(unmined)(_323.value0.cells);
     };
     var eqCoords = new Prelude.Eq(function (coords) {
         return function (coords$prime) {
             return !Prelude["=="](eqCoords)(coords)(coords$prime);
         };
-    }, function (_331) {
-        return function (_332) {
-            return _331.value0 === _332.value0 && _331.value1 === _332.value1;
+    }, function (_334) {
+        return function (_335) {
+            return _334.value0 === _335.value0 && _334.value1 === _335.value1;
         };
     });
     var ordCoords = new Prelude.Ord(function () {
         return eqCoords;
-    }, function (_333) {
-        return function (_334) {
-            if (_333.value0 === _334.value0) {
-                return Prelude.compare(Prelude.ordNumber)(_333.value1)(_334.value1);
+    }, function (_336) {
+        return function (_337) {
+            if (_336.value0 === _337.value0) {
+                return Prelude.compare(Prelude.ordNumber)(_336.value1)(_337.value1);
             };
             if (Prelude.otherwise) {
-                return Prelude.compare(Prelude.ordNumber)(_333.value0)(_334.value0);
+                return Prelude.compare(Prelude.ordNumber)(_336.value0)(_337.value0);
             };
             throw new Error("Failed pattern match");
         };
     });
-    var neighbor = function (_323) {
-        return function (_324) {
-            return Data_Set.member(ordCoords)(_324.value0.coords)(Data_Set.fromList(ordCoords)(surroundingCoords(_323)));
+    var neighbor = function (_324) {
+        return function (_325) {
+            return Data_Set.member(ordCoords)(_325.value0.coords)(Data_Set.fromList(ordCoords)(surroundingCoords(_324)));
         };
     };
-    var surroundingCells = function (_326) {
-        return function (_327) {
-            return Data_Array.filter(neighbor(_326))(_327.value0.cells);
+    var surroundingCells = function (_327) {
+        return function (_328) {
+            return Data_Array.filter(neighbor(_327))(_328.value0.cells);
         };
     };
-    var randomCoords = function (_319) {
-        return function (_320) {
-            var randomCoords$prime = function (_341) {
-                return function (_342) {
-                    return function (_343) {
-                        if (Data_Array.length(_343) === _341) {
-                            return Prelude["return"](Control_Monad_Eff.monadEff)(_343);
+    var randomCoords = function (_320) {
+        return function (_321) {
+            var randomCoords$prime = function (_344) {
+                return function (_345) {
+                    return function (_346) {
+                        if (Data_Array.length(_346) === _344) {
+                            return Prelude["return"](Control_Monad_Eff.monadEff)(_346);
                         };
                         if (Prelude.otherwise) {
                             return function __do() {
-                                var _12 = randomInt(_342.value0)();
-                                var _11 = randomInt(_342.value1)();
-                                return randomCoords$prime(_341)(_342)(Data_Array.nub(eqCoords)(Data_Array.snoc(_343)(new Coords(_12, _11))))();
+                                var _13 = randomInt(_345.value0)();
+                                var _12 = randomInt(_345.value1)();
+                                return randomCoords$prime(_344)(_345)(Data_Array.nub(eqCoords)(Data_Array.snoc(_346)(new Coords(_13, _12))))();
                             };
                         };
                         throw new Error("Failed pattern match");
                     };
                 };
             };
-            return randomCoords$prime(_319)(_320.value0.dimensions)([  ]);
+            return randomCoords$prime(_320)(_321.value0.dimensions)([  ]);
         };
     };
-    var emptyCells = function (_313) {
-        return Data_Array.concat(Prelude[">>="](Data_Array.bindArray)(Data_Array[".."](1)(_313.value0))(function (_9) {
-            return Prelude[">>="](Data_Array.bindArray)(Data_Array[".."](1)(_313.value1))(function (_8) {
+    var emptyCells = function (_314) {
+        return Data_Array.concat(Prelude[">>="](Data_Array.bindArray)(Data_Array[".."](1)(_314.value0))(function (_10) {
+            return Prelude[">>="](Data_Array.bindArray)(Data_Array[".."](1)(_314.value1))(function (_9) {
                 return Prelude["return"](Data_Array.monadArray)([ new Cell({
-                    coords: new Coords(_9, _8), 
+                    coords: new Coords(_10, _9), 
                     value: Data_Maybe.Nothing.value
                 }) ]);
             });
@@ -1157,72 +1219,121 @@ PS.Grid = (function () {
             cells: emptyCells(dims)
         });
     };
-    var cellIdx = function (_329) {
-        return function (_330) {
-            return (_330.value0 - 1) * _329.value1 + _330.value1 - 1;
+    var cellIdx = function (_332) {
+        return function (_333) {
+            return (_333.value0 - 1) * _332.value1 + _333.value1 - 1;
         };
     };
-    var updateCell = function (_316) {
-        return function (_317) {
-            return function (_318) {
+    var updateCell = function (_317) {
+        return function (_318) {
+            return function (_319) {
                 return new Grid({
-                    dimensions: _318.value0.dimensions, 
-                    cells: Data_Array.updateAt(cellIdx(_318.value0.dimensions)(_316))(_317)(_318.value0.cells)
+                    dimensions: _319.value0.dimensions, 
+                    cells: Data_Array.updateAt(cellIdx(_319.value0.dimensions)(_317))(_318)(_319.value0.cells)
                 });
             };
         };
     };
     var layMines = function (n) {
         return function (grid) {
-            var layMines$prime = function (__copy__335) {
-                return function (__copy__336) {
-                    var _335 = __copy__335;
-                    var _336 = __copy__336;
+            var layMines$prime = function (__copy__338) {
+                return function (__copy__339) {
+                    var _338 = __copy__338;
+                    var _339 = __copy__339;
                     tco: while (true) {
-                        if (_336.length >= 1) {
-                            var _637 = _336.slice(1);
-                            var __tco__335 = updateCell(_336[0])(new Cell({
-                                coords: _336[0], 
+                        if (_339.length >= 1) {
+                            var _644 = _339.slice(1);
+                            var __tco__338 = updateCell(_339[0])(new Cell({
+                                coords: _339[0], 
                                 value: new Data_Maybe.Just(Mine.value)
-                            }))(_335);
-                            _335 = __tco__335;
-                            _336 = _637;
+                            }))(_338);
+                            _338 = __tco__338;
+                            _339 = _644;
                             continue tco;
                         };
-                        if (_336.length === 0) {
-                            return _335;
+                        if (_339.length === 0) {
+                            return _338;
                         };
                         throw new Error("Failed pattern match");
                     };
                 };
             };
             return function __do() {
-                var _10 = randomCoords(n)(grid)();
-                return layMines$prime(grid)(_10);
+                var _11 = randomCoords(n)(grid)();
+                return layMines$prime(grid)(_11);
             };
         };
     };
     var placeHints = function (grid) {
-        var updateHint = function (_339) {
-            return function (_340) {
-                if (_340.value0.value instanceof Data_Maybe.Just && _340.value0.value.value0 instanceof Mine) {
-                    return _339;
+        var updateHint = function (_342) {
+            return function (_343) {
+                if (_343.value0.value instanceof Data_Maybe.Just && _343.value0.value.value0 instanceof Mine) {
+                    return _342;
                 };
-                if (_340.value0.value instanceof Data_Maybe.Nothing) {
-                    return updateCell(_340.value0.coords)(updateValue(_340)(new Data_Maybe.Just(new Hint(1))))(_339);
+                if (_343.value0.value instanceof Data_Maybe.Nothing) {
+                    return updateCell(_343.value0.coords)(updateValue(_343)(new Data_Maybe.Just(new Hint(1))))(_342);
                 };
-                if (_340.value0.value instanceof Data_Maybe.Just && _340.value0.value.value0 instanceof Hint) {
-                    return updateCell(_340.value0.coords)(updateValue(_340)(new Data_Maybe.Just(new Hint(1 + _340.value0.value.value0.value0))))(_339);
+                if (_343.value0.value instanceof Data_Maybe.Just && _343.value0.value.value0 instanceof Hint) {
+                    return updateCell(_343.value0.coords)(updateValue(_343)(new Data_Maybe.Just(new Hint(1 + _343.value0.value.value0.value0))))(_342);
                 };
                 throw new Error("Failed pattern match");
             };
         };
-        var updateHints = function (_337) {
-            return function (_338) {
-                return Data_Foldable.foldl(Data_Foldable.foldableArray)(updateHint)(_337)(surroundingCells(_338.value0.coords)(_337));
+        var updateHints = function (_340) {
+            return function (_341) {
+                return Data_Foldable.foldl(Data_Foldable.foldableArray)(updateHint)(_340)(surroundingCells(_341.value0.coords)(_340));
             };
         };
         return Data_Foldable.foldl(Data_Foldable.foldableArray)(updateHints)(grid)(minedCells(grid));
+    };
+    var newGrid = function (dims) {
+        return function (mines) {
+            return function __do() {
+                var _8 = layMines(mines)(emptyGrid(dims))();
+                return placeHints(_8);
+            };
+        };
+    };
+    var cellAt = function (_330) {
+        return function (_331) {
+            return Data_Array["!!"](_330.value0.cells)(cellIdx(_330.value0.dimensions)(_331));
+        };
+    };
+    var valueAt = function (grid) {
+        return function (coords) {
+            var unwrap = function (_350) {
+                if (_350 instanceof Data_Maybe.Just) {
+                    return _350.value0.value0.value;
+                };
+                if (_350 instanceof Data_Maybe.Nothing) {
+                    return Data_Maybe.Nothing.value;
+                };
+                throw new Error("Failed pattern match");
+            };
+            return unwrap(cellAt(grid)(coords));
+        };
+    };
+    var isHintAt = function (grid) {
+        return function (coords) {
+            var isHintAt$prime = function (_348) {
+                if (_348 instanceof Data_Maybe.Just && _348.value0 instanceof Hint) {
+                    return true;
+                };
+                return false;
+            };
+            return isHintAt$prime(valueAt(grid)(coords));
+        };
+    };
+    var isMineAt = function (grid) {
+        return function (coords) {
+            var isHintAt$prime = function (_349) {
+                if (_349 instanceof Data_Maybe.Just && _349.value0 instanceof Mine) {
+                    return true;
+                };
+                return false;
+            };
+            return isHintAt$prime(valueAt(grid)(coords));
+        };
     };
     return {
         Cell: Cell, 
@@ -1231,14 +1342,18 @@ PS.Grid = (function () {
         Grid: Grid, 
         Hint: Hint, 
         Mine: Mine, 
+        cellAt: cellAt, 
         cellIdx: cellIdx, 
         emptyCells: emptyCells, 
         emptyGrid: emptyGrid, 
         eqCoords: eqCoords, 
+        isHintAt: isHintAt, 
+        isMineAt: isMineAt, 
         layMines: layMines, 
         mined: mined, 
         minedCells: minedCells, 
         neighbor: neighbor, 
+        newGrid: newGrid, 
         ordCoords: ordCoords, 
         placeHints: placeHints, 
         randomCoords: randomCoords, 
@@ -1249,6 +1364,7 @@ PS.Grid = (function () {
         unmined: unmined, 
         unminedCells: unminedCells, 
         updateCell: updateCell, 
-        updateValue: updateValue
+        updateValue: updateValue, 
+        valueAt: valueAt
     };
 })();

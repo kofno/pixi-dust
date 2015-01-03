@@ -37,6 +37,10 @@ instance ordCoords :: Ord Coords where
   compare (Coords x y) (Coords x' y') | x == x'   = compare y y'
   compare (Coords x y) (Coords x' y') | otherwise = compare x x'
 
+newGrid :: Dimensions -> Number -> MS Grid
+newGrid dims mines = do
+  grid  <- layMines mines $ emptyGrid dims
+  return $ placeHints grid
 
 emptyGrid :: Dimensions -> Grid
 emptyGrid dims = Grid { dimensions: dims
@@ -131,6 +135,32 @@ randomInt :: Number -> MS Number
 randomInt max = do
   i <- random
   return $ 1 + (floor (i * max))
+
+isHintAt :: Grid -> Coords -> Boolean
+isHintAt grid coords =
+  isHintAt' $ valueAt grid coords
+  where
+    isHintAt' (Just (Hint _)) = true
+    isHintAt' _               = false
+
+isMineAt :: Grid -> Coords -> Boolean
+isMineAt grid coords =
+  isHintAt' $ valueAt grid coords
+  where
+    isHintAt' (Just (Mine)) = true
+    isHintAt' _             = false
+
+cellAt :: Grid -> Coords -> Maybe Cell
+cellAt (Grid { dimensions = dims, cells = cells }) coords =
+  cells !! (cellIdx dims coords)
+
+valueAt :: Grid -> Coords -> Maybe Artifact
+valueAt grid coords =
+  unwrap $ cellAt grid coords
+  where
+    unwrap :: Maybe Cell -> Maybe Artifact
+    unwrap (Just (Cell { value = value })) = value
+    unwrap Nothing = Nothing
 
 cellIdx :: Dimensions -> Coords -> Number
 cellIdx (Dimensions rows columns) (Coords x y) =

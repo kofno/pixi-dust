@@ -3,6 +3,10 @@ body {
   padding: 0;
 }
 
+div#the-game {
+  padding: 10px;
+}
+
 p, h1 {
   padding: 10px;
 }
