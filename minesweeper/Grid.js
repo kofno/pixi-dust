@@ -189,8 +189,8 @@ PS.Prelude = (function () {
     var $less = function (__dict_Ord_11) {
         return function (a1) {
             return function (a2) {
-                var _353 = compare(__dict_Ord_11)(a1)(a2);
-                if (_353 instanceof LT) {
+                var _356 = compare(__dict_Ord_11)(a1)(a2);
+                if (_356 instanceof LT) {
                     return true;
                 };
                 return false;
@@ -200,8 +200,8 @@ PS.Prelude = (function () {
     var $less$eq = function (__dict_Ord_12) {
         return function (a1) {
             return function (a2) {
-                var _354 = compare(__dict_Ord_12)(a1)(a2);
-                if (_354 instanceof GT) {
+                var _357 = compare(__dict_Ord_12)(a1)(a2);
+                if (_357 instanceof GT) {
                     return false;
                 };
                 return true;
@@ -211,8 +211,8 @@ PS.Prelude = (function () {
     var $greater$eq = function (__dict_Ord_14) {
         return function (a1) {
             return function (a2) {
-                var _355 = compare(__dict_Ord_14)(a1)(a2);
-                if (_355 instanceof LT) {
+                var _358 = compare(__dict_Ord_14)(a1)(a2);
+                if (_358 instanceof LT) {
                     return false;
                 };
                 return true;
@@ -395,6 +395,7 @@ PS.Data_Array = (function () {
     var Prelude_Unsafe = PS.Prelude_Unsafe;
     function snoc(l) {  return function (e) {    var l1 = l.slice();    l1.push(e);     return l1;  };};
     function length (xs) {  return xs.length;};
+    function findIndex (f) {  return function (arr) {    for (var i = 0, l = arr.length; i < l; i++) {      if (f(arr[i])) {        return i;      }    }    return -1;  };};
     function concat (xss) {  var result = [];  for (var i = 0, l = xss.length; i < l; i++) {    result.push.apply(result, xss[i]);  }  return result;};
     function updateAt (index) {  return function (a) {    return function (l) {      var i = ~~index;      if (i < 0 || i >= l.length) return l;      var l1 = l.slice();      l1[i] = a;      return l1;    };   };};
     function concatMap (f) {  return function (arr) {    var result = [];    for (var i = 0, l = arr.length; i < l; i++) {      Array.prototype.push.apply(result, f(arr[i]));    }    return result;  };};
@@ -419,10 +420,10 @@ PS.Data_Array = (function () {
                 return [  ];
             };
             if (_103.length >= 1) {
-                var _365 = _103.slice(1);
+                var _368 = _103.slice(1);
                 return Prelude[":"](_103[0])(nubBy(_102)(filter(function (y) {
                     return !_102(_103[0])(y);
-                })(_365)));
+                })(_368)));
             };
             throw new Error("Failed pattern match");
         };
@@ -431,6 +432,11 @@ PS.Data_Array = (function () {
         return nubBy(Prelude["=="](__dict_Eq_57));
     };
     var functorArray = new Prelude.Functor(map);
+    var elemIndex = function (__dict_Eq_62) {
+        return function (x) {
+            return findIndex(Prelude["=="](__dict_Eq_62)(x));
+        };
+    };
     var monadArray = new Prelude.Monad(function () {
         return applicativeArray;
     }, function () {
@@ -453,7 +459,9 @@ PS.Data_Array = (function () {
         bindArray: bindArray, 
         concat: concat, 
         concatMap: concatMap, 
+        elemIndex: elemIndex, 
         filter: filter, 
+        findIndex: findIndex, 
         functorArray: functorArray, 
         length: length, 
         map: map, 
@@ -792,56 +800,56 @@ PS.Data_Map = (function () {
                         return _275;
                     };
                     if (_274.length >= 1) {
-                        var _421 = _274.slice(1);
+                        var _424 = _274.slice(1);
                         if (_274[0] instanceof TwoLeft) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Two(_275, (_274[0]).value0, (_274[0]).value1, (_274[0]).value2);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _421;
+                            _274 = _424;
                             _275 = __tco__275;
                             continue tco;
                         };
                     };
                     if (_274.length >= 1) {
-                        var _426 = _274.slice(1);
+                        var _429 = _274.slice(1);
                         if (_274[0] instanceof TwoRight) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Two((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, _275);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _426;
+                            _274 = _429;
                             _275 = __tco__275;
                             continue tco;
                         };
                     };
                     if (_274.length >= 1) {
-                        var _434 = _274.slice(1);
+                        var _437 = _274.slice(1);
                         if (_274[0] instanceof ThreeLeft) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Three(_275, (_274[0]).value0, (_274[0]).value1, (_274[0]).value2, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _434;
+                            _274 = _437;
                             _275 = __tco__275;
                             continue tco;
                         };
                     };
                     if (_274.length >= 1) {
-                        var _442 = _274.slice(1);
+                        var _445 = _274.slice(1);
                         if (_274[0] instanceof ThreeMiddle) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Three((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, _275, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _442;
+                            _274 = _445;
                             _275 = __tco__275;
                             continue tco;
                         };
                     };
                     if (_274.length >= 1) {
-                        var _450 = _274.slice(1);
+                        var _453 = _274.slice(1);
                         if (_274[0] instanceof ThreeRight) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Three((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5, _275);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _450;
+                            _274 = _453;
                             _275 = __tco__275;
                             continue tco;
                         };
@@ -863,46 +871,46 @@ PS.Data_Map = (function () {
                             return new Two(_287.value0, _287.value1, _287.value2, _287.value3);
                         };
                         if (_286.length >= 1) {
-                            var _465 = _286.slice(1);
+                            var _468 = _286.slice(1);
                             if (_286[0] instanceof TwoLeft) {
-                                return fromZipper(__dict_Ord_151)(_465)(new Three(_287.value0, _287.value1, _287.value2, _287.value3, (_286[0]).value0, (_286[0]).value1, (_286[0]).value2));
+                                return fromZipper(__dict_Ord_151)(_468)(new Three(_287.value0, _287.value1, _287.value2, _287.value3, (_286[0]).value0, (_286[0]).value1, (_286[0]).value2));
                             };
                         };
                         if (_286.length >= 1) {
-                            var _474 = _286.slice(1);
+                            var _477 = _286.slice(1);
                             if (_286[0] instanceof TwoRight) {
-                                return fromZipper(__dict_Ord_151)(_474)(new Three((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, _287.value0, _287.value1, _287.value2, _287.value3));
+                                return fromZipper(__dict_Ord_151)(_477)(new Three((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, _287.value0, _287.value1, _287.value2, _287.value3));
                             };
                         };
                         if (_286.length >= 1) {
-                            var _486 = _286.slice(1);
+                            var _489 = _286.slice(1);
                             if (_286[0] instanceof ThreeLeft) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
                                 var __tco__287 = new KickUp(new Two(_287.value0, _287.value1, _287.value2, _287.value3), (_286[0]).value0, (_286[0]).value1, new Two((_286[0]).value2, (_286[0]).value3, (_286[0]).value4, (_286[0]).value5));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _286 = _486;
+                                _286 = _489;
                                 _287 = __tco__287;
                                 continue tco;
                             };
                         };
                         if (_286.length >= 1) {
-                            var _498 = _286.slice(1);
+                            var _501 = _286.slice(1);
                             if (_286[0] instanceof ThreeMiddle) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
                                 var __tco__287 = new KickUp(new Two((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, _287.value0), _287.value1, _287.value2, new Two(_287.value3, (_286[0]).value3, (_286[0]).value4, (_286[0]).value5));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _286 = _498;
+                                _286 = _501;
                                 _287 = __tco__287;
                                 continue tco;
                             };
                         };
                         if (_286.length >= 1) {
-                            var _510 = _286.slice(1);
+                            var _513 = _286.slice(1);
                             if (_286[0] instanceof ThreeRight) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
                                 var __tco__287 = new KickUp(new Two((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, (_286[0]).value3), (_286[0]).value4, (_286[0]).value5, new Two(_287.value0, _287.value1, _287.value2, _287.value3));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _286 = _510;
+                                _286 = _513;
                                 _287 = __tco__287;
                                 continue tco;
                             };
@@ -1242,13 +1250,13 @@ PS.Grid = (function () {
                     var _339 = __copy__339;
                     tco: while (true) {
                         if (_339.length >= 1) {
-                            var _644 = _339.slice(1);
+                            var _647 = _339.slice(1);
                             var __tco__338 = updateCell(_339[0])(new Cell({
                                 coords: _339[0], 
                                 value: new Data_Maybe.Just(Mine.value)
                             }))(_338);
                             _338 = __tco__338;
-                            _339 = _644;
+                            _339 = _647;
                             continue tco;
                         };
                         if (_339.length === 0) {
@@ -1299,13 +1307,44 @@ PS.Grid = (function () {
             return Data_Array["!!"](_330.value0.cells)(cellIdx(_330.value0.dimensions)(_331));
         };
     };
+    var floodFill = function (grid) {
+        return function (cell) {
+            var floodFill$prime = function (_348) {
+                return function (_349) {
+                    return function (_350) {
+                        if (_349 instanceof Data_Maybe.Nothing) {
+                            return _350;
+                        };
+                        if (_349 instanceof Data_Maybe.Just && (_349.value0.value0.value instanceof Data_Maybe.Just && _349.value0.value0.value.value0 instanceof Mine)) {
+                            return _350;
+                        };
+                        if (_349 instanceof Data_Maybe.Just && (_349.value0.value0.value instanceof Data_Maybe.Just && (_349.value0.value0.value.value0 instanceof Hint && Data_Array.elemIndex(eqCoords)(_349.value0.value0.coords)(_350) === -1))) {
+                            return _350;
+                        };
+                        if (_349 instanceof Data_Maybe.Just && (_349.value0.value0.value instanceof Data_Maybe.Just && _349.value0.value0.value.value0 instanceof Hint)) {
+                            return Data_Array.snoc(_350)(_349.value0.value0.coords);
+                        };
+                        if (_349 instanceof Data_Maybe.Just) {
+                            var floodRight$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0 + 1, _349.value0.value0.coords.value1)))(_350);
+                            var floodLeft$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0 - 1, _349.value0.value0.coords.value1)))(floodRight$prime);
+                            var floodDown$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0, _349.value0.value0.coords.value1 - 1)))(floodLeft$prime);
+                            var floodUp$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0, _349.value0.value0.coords.value1 + 1)))(floodDown$prime);
+                            return floodUp$prime;
+                        };
+                        throw new Error("Failed pattern match");
+                    };
+                };
+            };
+            return floodFill$prime(grid)(new Data_Maybe.Just(cell))([  ]);
+        };
+    };
     var valueAt = function (grid) {
         return function (coords) {
-            var unwrap = function (_350) {
-                if (_350 instanceof Data_Maybe.Just) {
-                    return _350.value0.value0.value;
+            var unwrap = function (_353) {
+                if (_353 instanceof Data_Maybe.Just) {
+                    return _353.value0.value0.value;
                 };
-                if (_350 instanceof Data_Maybe.Nothing) {
+                if (_353 instanceof Data_Maybe.Nothing) {
                     return Data_Maybe.Nothing.value;
                 };
                 throw new Error("Failed pattern match");
@@ -1315,8 +1354,8 @@ PS.Grid = (function () {
     };
     var isHintAt = function (grid) {
         return function (coords) {
-            var isHintAt$prime = function (_348) {
-                if (_348 instanceof Data_Maybe.Just && _348.value0 instanceof Hint) {
+            var isHintAt$prime = function (_351) {
+                if (_351 instanceof Data_Maybe.Just && _351.value0 instanceof Hint) {
                     return true;
                 };
                 return false;
@@ -1326,8 +1365,8 @@ PS.Grid = (function () {
     };
     var isMineAt = function (grid) {
         return function (coords) {
-            var isHintAt$prime = function (_349) {
-                if (_349 instanceof Data_Maybe.Just && _349.value0 instanceof Mine) {
+            var isHintAt$prime = function (_352) {
+                if (_352 instanceof Data_Maybe.Just && _352.value0 instanceof Mine) {
                     return true;
                 };
                 return false;
@@ -1347,6 +1386,7 @@ PS.Grid = (function () {
         emptyCells: emptyCells, 
         emptyGrid: emptyGrid, 
         eqCoords: eqCoords, 
+        floodFill: floodFill, 
         isHintAt: isHintAt, 
         isMineAt: isMineAt, 
         layMines: layMines, 

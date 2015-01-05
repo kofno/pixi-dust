@@ -131,6 +131,23 @@ surroundingCoords (Coords x y) = map (applyDeltas) coordinateDeltas
     applyDeltas :: [(Number -> Number)] -> Coords
     applyDeltas [fnX, fnY] = Coords (fnX x) (fnY y)
 
+floodFill :: Grid -> Cell -> [Coords]
+floodFill grid cell = floodFill' grid (Just cell) []
+  where
+    floodFill' :: Grid -> Maybe Cell -> [Coords] -> [Coords]
+    floodFill' _ Nothing accum = accum
+    floodFill' _ (Just (Cell { value = (Just Mine) })) accum = accum
+    floodFill' _ (Just (Cell { value = (Just (Hint _)), coords = coords })) accum |
+      (elemIndex coords accum) == -1 = accum
+    floodFill' _ (Just (Cell { value = (Just (Hint _)), coords = coords })) accum = snoc accum coords
+    floodFill' grid (Just (Cell { coords = (Coords x y) })) accum = floodUp'
+      where
+        floodUp'    = floodFill' grid (cellAt grid (Coords x (y+1))) floodDown'
+        floodDown'  = floodFill' grid (cellAt grid (Coords x (y-1))) floodLeft'
+        floodLeft'  = floodFill' grid (cellAt grid (Coords (x-1) y)) floodRight'
+        floodRight' = floodFill' grid (cellAt grid (Coords (x+1) y)) accum
+
+
 randomInt :: Number -> MS Number
 randomInt max = do
   i <- random
