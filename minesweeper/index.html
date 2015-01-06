@@ -14,8 +14,8 @@
       </a>
     </p>
     <p>
-      This game is imcomplete. I still need to implement a flood fill when you click
-      on an empty cell. I also don't track win/loss conditions, so it is currently
+      This game is incomplete. I still need to implement a <del>flood fill when you click
+      on an empty cell</del>*. I also don't track win/loss conditions, so it is currently
       honor system minesweeper.
     <p>
       The game board is written in javascript using pixijs. The logic is written
@@ -26,6 +26,10 @@
     </p>
     <p>
       Calling into Purescript from javascript felt a bit clunky but the javascript part felt a bit clunky in general compared to writing the Purescript. At some point, I'd like to come back and rewrite the gameboard using the purescript-pixi bindings.
+    </p>
+
+    <p>
+      * Flood fill has been implemented. Most of the heavy lifting around deciding which buttons to click is actually written in purescript. Then I iterate over those coordinates and reveal the specific buttons. Again, this is something that would be considerably cleaner if I could have written it all in purescript.
     </p>
     <script type="text/javascript" src="index.js"></script>
   </body>
