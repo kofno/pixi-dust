@@ -1308,7 +1308,7 @@ PS.Grid = (function () {
         };
     };
     var floodFill = function (grid) {
-        return function (cell) {
+        return function (coords) {
             var floodFill$prime = function (_348) {
                 return function (_349) {
                     return function (_350) {
@@ -1318,14 +1318,14 @@ PS.Grid = (function () {
                         if (_349 instanceof Data_Maybe.Just && (_349.value0.value0.value instanceof Data_Maybe.Just && _349.value0.value0.value.value0 instanceof Mine)) {
                             return _350;
                         };
-                        if (_349 instanceof Data_Maybe.Just && (_349.value0.value0.value instanceof Data_Maybe.Just && (_349.value0.value0.value.value0 instanceof Hint && Data_Array.elemIndex(eqCoords)(_349.value0.value0.coords)(_350) === -1))) {
-                            return _350;
-                        };
                         if (_349 instanceof Data_Maybe.Just && (_349.value0.value0.value instanceof Data_Maybe.Just && _349.value0.value0.value.value0 instanceof Hint)) {
                             return Data_Array.snoc(_350)(_349.value0.value0.coords);
                         };
+                        if (_349 instanceof Data_Maybe.Just && Data_Array.elemIndex(eqCoords)(_349.value0.value0.coords)(_350) !== -1) {
+                            return _350;
+                        };
                         if (_349 instanceof Data_Maybe.Just) {
-                            var floodRight$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0 + 1, _349.value0.value0.coords.value1)))(_350);
+                            var floodRight$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0 + 1, _349.value0.value0.coords.value1)))(Data_Array.snoc(_350)(_349.value0.value0.coords));
                             var floodLeft$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0 - 1, _349.value0.value0.coords.value1)))(floodRight$prime);
                             var floodDown$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0, _349.value0.value0.coords.value1 - 1)))(floodLeft$prime);
                             var floodUp$prime = floodFill$prime(_348)(cellAt(_348)(new Coords(_349.value0.value0.coords.value0, _349.value0.value0.coords.value1 + 1)))(floodDown$prime);
@@ -1335,7 +1335,7 @@ PS.Grid = (function () {
                     };
                 };
             };
-            return floodFill$prime(grid)(new Data_Maybe.Just(cell))([  ]);
+            return floodFill$prime(grid)(cellAt(grid)(coords))([  ]);
         };
     };
     var valueAt = function (grid) {

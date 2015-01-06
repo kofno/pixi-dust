@@ -6,6 +6,7 @@ var Game = (function() {
     this.stage     = new PIXI.Stage(0x888888);
     this.renderer  = PIXI.autoDetectRenderer(255, 255);
     this.container = new PIXI.DisplayObjectContainer();
+    this.buttons   = []
     this.grid      = buildGrid();
   }
 
@@ -18,6 +19,20 @@ var Game = (function() {
     this.loader.load();
   }
 
+  Game.prototype.handleReveal = function(data) {
+    var button = data.target;
+    if (PS.Grid.isMineAt(this.grid)(button.theCoords))
+      this.reveal(button);
+    else
+      this.floodFill(button);
+  }
+
+  Game.prototype.reveal = function(button) {
+    button.interactive = false;
+    button.buttonMode = false;
+    button.setTexture(this.pickTexture(button.theCoords));
+  }
+
   Game.prototype.pickTexture = function(coords) {
     if (PS.Grid.isHintAt(this.grid)(coords)) {
       var value = PS.Grid.valueAt(this.grid)(coords);
@@ -27,13 +42,6 @@ var Game = (function() {
     } else {
       return this.textures.open;
     }
-  }
-
-  Game.prototype.handleReveal = function(data) {
-    var button = data.target;
-    button.interactive = false;
-    button.buttonMode = false;
-    button.setTexture(this.pickTexture(button.theCoords));
   }
 
   Game.prototype.handleFlag = function(data) {
@@ -48,6 +56,15 @@ var Game = (function() {
     return false;
   }
 
+  Game.prototype.floodFill = function(button) {
+    var revealable = PS.Grid.floodFill(this.grid)(button.theCoords);
+    for (var i = 0; i < this.buttons.length; i++) {
+      if (matchingCoords(revealable, this.buttons[i].theCoords)) {
+        this.reveal(this.buttons[i]);
+      }
+    }
+  }
+
   Game.prototype.buildGrid = function() {
     for (var x = 0; x < 100; x++) {
       for (var y = 0; y < 100; y++) {
@@ -60,6 +77,7 @@ var Game = (function() {
 
         button.mousedown = this.handleReveal.bind(this);
         button.rightdown = this.handleFlag.bind(this);
+        this.buttons.push(button);
         this.container.addChild(button);
       }
     }
@@ -95,9 +113,18 @@ var Game = (function() {
     }
   }
 
+  function matchingCoords(coords, coord) {
+    if (coord) {
+      var thing = PS.Data_Array.findIndex(PS.Grid.eqCoords["=="](coord))(coords);
+      return PS.Data_Array.findIndex(PS.Grid.eqCoords["=="](coord))(coords) >= 0;
+    } else {
+      return false;
+    }
+  }
+
   function buildGrid() {
     var dims = new PS.Grid.Dimensions(10, 10);
-    return PS.Grid.newGrid(dims)(10)();
+    return PS.Grid.newGrid(dims)(15)();
   }
 
   return Game;
