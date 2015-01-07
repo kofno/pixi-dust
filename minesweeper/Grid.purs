@@ -169,6 +169,8 @@ isMineAt grid coords =
     isHintAt' _             = false
 
 cellAt :: Grid -> Coords -> Maybe Cell
+cellAt (Grid { dimensions = (Dimensions rows columns) }) (Coords x y)
+  | x > columns || x < 1 || y > rows || y < 1 = Nothing
 cellAt (Grid { dimensions = dims, cells = cells }) coords =
   cells !! (cellIdx dims coords)
 

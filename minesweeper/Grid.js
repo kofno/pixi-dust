@@ -208,11 +208,22 @@ PS.Prelude = (function () {
             };
         };
     };
+    var $greater = function (__dict_Ord_13) {
+        return function (a1) {
+            return function (a2) {
+                var _358 = compare(__dict_Ord_13)(a1)(a2);
+                if (_358 instanceof GT) {
+                    return true;
+                };
+                return false;
+            };
+        };
+    };
     var $greater$eq = function (__dict_Ord_14) {
         return function (a1) {
             return function (a2) {
-                var _358 = compare(__dict_Ord_14)(a1)(a2);
-                if (_358 instanceof LT) {
+                var _359 = compare(__dict_Ord_14)(a1)(a2);
+                if (_359 instanceof LT) {
                     return false;
                 };
                 return true;
@@ -251,6 +262,7 @@ PS.Prelude = (function () {
         "<=": $less$eq, 
         "<>": $less$greater, 
         "==": $eq$eq, 
+        ">": $greater, 
         ">=": $greater$eq, 
         ">>=": $greater$greater$eq, 
         Applicative: Applicative, 
@@ -420,10 +432,10 @@ PS.Data_Array = (function () {
                 return [  ];
             };
             if (_103.length >= 1) {
-                var _368 = _103.slice(1);
+                var _369 = _103.slice(1);
                 return Prelude[":"](_103[0])(nubBy(_102)(filter(function (y) {
                     return !_102(_103[0])(y);
-                })(_368)));
+                })(_369)));
             };
             throw new Error("Failed pattern match");
         };
@@ -800,56 +812,56 @@ PS.Data_Map = (function () {
                         return _275;
                     };
                     if (_274.length >= 1) {
-                        var _424 = _274.slice(1);
+                        var _425 = _274.slice(1);
                         if (_274[0] instanceof TwoLeft) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Two(_275, (_274[0]).value0, (_274[0]).value1, (_274[0]).value2);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _424;
+                            _274 = _425;
                             _275 = __tco__275;
                             continue tco;
                         };
                     };
                     if (_274.length >= 1) {
-                        var _429 = _274.slice(1);
+                        var _430 = _274.slice(1);
                         if (_274[0] instanceof TwoRight) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Two((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, _275);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _429;
+                            _274 = _430;
                             _275 = __tco__275;
                             continue tco;
                         };
                     };
                     if (_274.length >= 1) {
-                        var _437 = _274.slice(1);
+                        var _438 = _274.slice(1);
                         if (_274[0] instanceof ThreeLeft) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Three(_275, (_274[0]).value0, (_274[0]).value1, (_274[0]).value2, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _437;
+                            _274 = _438;
                             _275 = __tco__275;
                             continue tco;
                         };
                     };
                     if (_274.length >= 1) {
-                        var _445 = _274.slice(1);
+                        var _446 = _274.slice(1);
                         if (_274[0] instanceof ThreeMiddle) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Three((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, _275, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _445;
+                            _274 = _446;
                             _275 = __tco__275;
                             continue tco;
                         };
                     };
                     if (_274.length >= 1) {
-                        var _453 = _274.slice(1);
+                        var _454 = _274.slice(1);
                         if (_274[0] instanceof ThreeRight) {
                             var __tco___dict_Ord_149 = __dict_Ord_149;
                             var __tco__275 = new Three((_274[0]).value0, (_274[0]).value1, (_274[0]).value2, (_274[0]).value3, (_274[0]).value4, (_274[0]).value5, _275);
                             __dict_Ord_149 = __tco___dict_Ord_149;
-                            _274 = _453;
+                            _274 = _454;
                             _275 = __tco__275;
                             continue tco;
                         };
@@ -871,46 +883,46 @@ PS.Data_Map = (function () {
                             return new Two(_287.value0, _287.value1, _287.value2, _287.value3);
                         };
                         if (_286.length >= 1) {
-                            var _468 = _286.slice(1);
+                            var _469 = _286.slice(1);
                             if (_286[0] instanceof TwoLeft) {
-                                return fromZipper(__dict_Ord_151)(_468)(new Three(_287.value0, _287.value1, _287.value2, _287.value3, (_286[0]).value0, (_286[0]).value1, (_286[0]).value2));
+                                return fromZipper(__dict_Ord_151)(_469)(new Three(_287.value0, _287.value1, _287.value2, _287.value3, (_286[0]).value0, (_286[0]).value1, (_286[0]).value2));
                             };
                         };
                         if (_286.length >= 1) {
-                            var _477 = _286.slice(1);
+                            var _478 = _286.slice(1);
                             if (_286[0] instanceof TwoRight) {
-                                return fromZipper(__dict_Ord_151)(_477)(new Three((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, _287.value0, _287.value1, _287.value2, _287.value3));
+                                return fromZipper(__dict_Ord_151)(_478)(new Three((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, _287.value0, _287.value1, _287.value2, _287.value3));
                             };
                         };
                         if (_286.length >= 1) {
-                            var _489 = _286.slice(1);
+                            var _490 = _286.slice(1);
                             if (_286[0] instanceof ThreeLeft) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
                                 var __tco__287 = new KickUp(new Two(_287.value0, _287.value1, _287.value2, _287.value3), (_286[0]).value0, (_286[0]).value1, new Two((_286[0]).value2, (_286[0]).value3, (_286[0]).value4, (_286[0]).value5));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _286 = _489;
+                                _286 = _490;
                                 _287 = __tco__287;
                                 continue tco;
                             };
                         };
                         if (_286.length >= 1) {
-                            var _501 = _286.slice(1);
+                            var _502 = _286.slice(1);
                             if (_286[0] instanceof ThreeMiddle) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
                                 var __tco__287 = new KickUp(new Two((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, _287.value0), _287.value1, _287.value2, new Two(_287.value3, (_286[0]).value3, (_286[0]).value4, (_286[0]).value5));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _286 = _501;
+                                _286 = _502;
                                 _287 = __tco__287;
                                 continue tco;
                             };
                         };
                         if (_286.length >= 1) {
-                            var _513 = _286.slice(1);
+                            var _514 = _286.slice(1);
                             if (_286[0] instanceof ThreeRight) {
                                 var __tco___dict_Ord_151 = __dict_Ord_151;
                                 var __tco__287 = new KickUp(new Two((_286[0]).value0, (_286[0]).value1, (_286[0]).value2, (_286[0]).value3), (_286[0]).value4, (_286[0]).value5, new Two(_287.value0, _287.value1, _287.value2, _287.value3));
                                 __dict_Ord_151 = __tco___dict_Ord_151;
-                                _286 = _513;
+                                _286 = _514;
                                 _287 = __tco__287;
                                 continue tco;
                             };
@@ -1250,13 +1262,13 @@ PS.Grid = (function () {
                     var _339 = __copy__339;
                     tco: while (true) {
                         if (_339.length >= 1) {
-                            var _647 = _339.slice(1);
+                            var _648 = _339.slice(1);
                             var __tco__338 = updateCell(_339[0])(new Cell({
                                 coords: _339[0], 
                                 value: new Data_Maybe.Just(Mine.value)
                             }))(_338);
                             _338 = __tco__338;
-                            _339 = _647;
+                            _339 = _648;
                             continue tco;
                         };
                         if (_339.length === 0) {
@@ -1304,6 +1316,9 @@ PS.Grid = (function () {
     };
     var cellAt = function (_330) {
         return function (_331) {
+            if (_331.value0 > _330.value0.dimensions.value1 || (_331.value0 < 1 || (_331.value1 > _330.value0.dimensions.value0 || _331.value1 < 1))) {
+                return Data_Maybe.Nothing.value;
+            };
             return Data_Array["!!"](_330.value0.cells)(cellIdx(_330.value0.dimensions)(_331));
         };
     };
